@@ -13,7 +13,11 @@ export class PhotoController {
     }
   }
 
-  async getById(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+  async getById(
+    req: Request<{ id: string }>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const photo = await photoService.findById(req.params.id);
       if (!photo) {
@@ -45,7 +49,11 @@ export class PhotoController {
     }
   }
 
-  async delete(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+  async delete(
+    req: Request<{ id: string }>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       await photoService.delete(req.params.id);
       res.status(204).send();

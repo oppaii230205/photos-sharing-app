@@ -20,7 +20,11 @@ export class CommentController {
     }
   }
 
-  async delete(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+  async delete(
+    req: Request<{ id: string }>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       await commentService.delete(req.params.id);
       res.status(204).send();
