@@ -1,6 +1,5 @@
 export interface Photo {
   id: string;
-  filename: string;
   originalName: string;
   url: string;
   caption?: string | null;
@@ -19,9 +18,7 @@ export interface Comment {
 }
 
 export interface CreatePhotoInput {
-  filename: string;
-  originalName: string;
-  url: string;
+  file: Express.Multer.File;
   caption?: string;
 }
 
@@ -29,4 +26,12 @@ export interface CreateCommentInput {
   photoId: string;
   content: string;
   author?: string;
+}
+
+export interface CloudinaryUploadResponse {
+  code: number;
+  message: string;
+  result: {
+    image: string;
+  };
 }

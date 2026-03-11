@@ -6,7 +6,6 @@ const commentService = new CommentService();
 export class CommentController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      // TODO: Implement - create a comment for a photo
       const { photoId, content, author } = req.body;
 
       if (!photoId || !content) {
@@ -21,9 +20,8 @@ export class CommentController {
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction) {
+  async delete(req: Request<{ id: string }>, res: Response, next: NextFunction) {
     try {
-      // TODO: Implement - delete a comment
       await commentService.delete(req.params.id);
       res.status(204).send();
     } catch (error) {

@@ -1,44 +1,48 @@
-import { PrismaClient } from "@prisma/client";
 import prisma from "../lib/prisma";
+import { uploadToCloudinary } from "./cloudinary.service";
 
 interface CreatePhotoInput {
-  filename: string;
-  originalName: string;
-  url: string;
+  file: Express.Multer.File;
   caption?: string;
 }
 
 export class PhotoService {
   async findAll() {
-    // TODO: Implement with Prisma - include comments, order by newest
     return prisma.photo.findMany({
-      include: { comments: true },
+      include: {
+        comments: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
       orderBy: { createdAt: "desc" },
     });
   }
 
   async findById(id: string) {
-    // TODO: Implement with Prisma
     return prisma.photo.findUnique({
       where: { id },
-      include: { comments: { orderBy: { createdAt: "desc" } } },
-    });
-  }
-
-  async create(data: CreatePhotoInput) {
-    // TODO: Implement with Prisma
-    return prisma.photo.create({
-      data: {
-        filename: data.filename,
-        originalName: data.originalName,
-        url: data.url,
-        caption: data.caption,
+      include: {
+        comments: {
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
   }
 
+  async create(data: CreatePhotoInput) {
+    const imageUrl = await uploadToCloudinary(data.file);
+
+    return prisma.photo.create({
+      data: {
+        originalName: data.file.originalname,
+        url: imageUrl,
+        caption: data.caption,
+      },
+      include: { comments: true },
+    });
+  }
+
   async delete(id: string) {
-    // TODO: Implement with Prisma - also delete associated comments
     return prisma.photo.delete({
       where: { id },
     });

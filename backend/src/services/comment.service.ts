@@ -8,7 +8,6 @@ interface CreateCommentInput {
 
 export class CommentService {
   async create(data: CreateCommentInput) {
-    // TODO: Implement with Prisma
     return prisma.comment.create({
       data: {
         content: data.content,
@@ -19,7 +18,6 @@ export class CommentService {
   }
 
   async delete(id: string) {
-    // TODO: Implement with Prisma
     return prisma.comment.delete({
       where: { id },
     });
