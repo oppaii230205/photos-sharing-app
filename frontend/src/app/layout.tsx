@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} antialiased`}>
-      <body className="bg-[#F7F8FA] min-h-screen flex flex-col font-sans text-gray-800">
+    <html lang="en" className={`${inter.variable} antialiased`} suppressHydrationWarning>
+      <body className="bg-[#F7F8FA] min-h-screen flex flex-col font-sans text-gray-800" suppressHydrationWarning>
         <ConfigProvider
           theme={{
             token: {
