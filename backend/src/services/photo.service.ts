@@ -1,5 +1,7 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { uploadToCloudinary } from "./cloudinary.service";
+import { NotFoundError } from "../lib/errors";
 
 interface CreatePhotoInput {
   file: Express.Multer.File;
@@ -43,8 +45,18 @@ export class PhotoService {
   }
 
   async delete(id: string) {
-    return prisma.photo.delete({
-      where: { id },
-    });
+    try {
+      return await prisma.photo.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        throw new NotFoundError(`Photo with id "${id}" not found`);
+      }
+      throw error;
+    }
   }
 }
