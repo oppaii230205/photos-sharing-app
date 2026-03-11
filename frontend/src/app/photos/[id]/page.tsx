@@ -6,14 +6,16 @@
 // - Show CommentSection component
 // - Handle loading and error states
 
-export default function PhotoDetailPage({
+export default async function PhotoDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+
   return (
     <div>
-      <h1>Photo Detail</h1>
+      <h1>Photo Detail {id}</h1>
       {/* TODO: Add photo display and CommentSection */}
     </div>
   );
