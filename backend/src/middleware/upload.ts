@@ -1,16 +1,8 @@
 import multer from "multer";
-import path from "path";
+import { BadRequestError } from "../lib/errors";
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, path.join(__dirname, "../../uploads"));
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `${uniqueSuffix}${ext}`);
-  },
-});
+// Use memory storage — files are held in buffer and forwarded to Cloudinary
+const storage = multer.memoryStorage();
 
 const fileFilter = (
   _req: Express.Request,
@@ -21,7 +13,11 @@ const fileFilter = (
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only image files (JPEG, PNG, GIF, WebP) are allowed"));
+    cb(
+      new BadRequestError(
+        "Only image files (JPEG, PNG, GIF, WebP) are allowed",
+      ),
+    );
   }
 };
 

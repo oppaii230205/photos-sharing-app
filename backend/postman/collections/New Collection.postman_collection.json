@@ -1,0 +1,241 @@
+{
+  "info": {
+    "_postman_id": "0c032e77-3c1b-413b-9778-892f5af33248",
+    "name": "PhotoBoard",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Photos",
+      "item": [
+        {
+          "name": "Get All Photos (Paginated)",
+          "id": "bcb71264-6d4b-43fe-a252-79844d4691e0",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/photos?page=1&limit=12",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "photos"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "12"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Photo By ID",
+          "id": "05017eca-eb70-4771-bb68-0c250734a142",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/photos/58354937-2a6e-460e-802f-b594d6f51559",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "photos",
+                "58354937-2a6e-460e-802f-b594d6f51559"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Photo",
+          "id": "d9f90180-e9e3-4bbd-8987-e45f1b9ce425",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "description": "Image file (JPEG, PNG, GIF, WebP). Max 5 MB.",
+                  "src": [
+                    "/C:/Users/nhthinh/Desktop/old-driver.png"
+                  ]
+                },
+                {
+                  "key": "caption",
+                  "value": "Sunset at Da Nang beach",
+                  "type": "text",
+                  "description": "Optional caption for the photo"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/photos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "photos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Photo",
+          "id": "bac82948-f413-43dd-a6f9-0f1ac23242d9",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/photos/58354937-2a6e-460e-802f-b594d6f51559",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "photos",
+                "58354937-2a6e-460e-802f-b594d6f51559"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "b3ec06c2-b0e1-4184-9829-e3e6ce15f4a2"
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Get Comments By Photo ID (Paginated)",
+          "id": "9e1835a9-c696-414d-a2b4-ad79131b4e29",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/comments/photo/ba6b4f80-3690-4067-9e6f-32d87c9b0401?page=1&limit=12",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "comments",
+                "photo",
+                "ba6b4f80-3690-4067-9e6f-32d87c9b0401"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "uuid": "3db1c963-ecaa-4847-b779-7fe4bd536940"
+                },
+                {
+                  "key": "limit",
+                  "value": "12",
+                  "uuid": "b709d67b-acff-49eb-b8bf-c25e110636d5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Comment",
+          "id": "f3cd0824-145f-49b2-9f2f-cdc97165f063",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"photoId\": \"ba6b4f80-3690-4067-9e6f-32d87c9b0401\",\n  \"content\": \"This is such a beautiful photo! Love the lighting.\",\n  \"author\": \"John Doe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/comments",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "id": "a375340c-3178-4173-acff-ff5354722f4f",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/comments/f38da7b6-a8fb-4748-8f70-1f2dd6bc90e3",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "comments",
+                "f38da7b6-a8fb-4748-8f70-1f2dd6bc90e3"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "98f8eb72-8dcc-4d87-b22d-0b03bb370b5c"
+    },
+    {
+      "name": "Health Check",
+      "id": "97a0d8ab-bf07-416b-baa9-e8bc234785f7",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseURL}}/api/v1/health",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "health"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

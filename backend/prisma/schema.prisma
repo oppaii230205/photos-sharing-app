@@ -12,7 +12,6 @@ datasource db {
 
 model Photo {
   id           String    @id @default(uuid())
-  filename     String
   originalName String
   url          String
   caption      String?
@@ -32,5 +31,6 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([photoId])
   @@map("comments")
 }
