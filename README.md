@@ -8,7 +8,7 @@ Users can upload photos, browse the community gallery, and leave comments on any
 
 ## Live Demo
 
-**Note**: The application is deployed on Render's free tier. Since free services may go to sleep after about 15 minutes of inactivity, the first API request might take a bit longer while the server wakes up. Thank you for your understanding.
+**Note**: The application is deployed on Render's free tier. Since free services may go to sleep after about 15 minutes of inactivity, the first API request might take a bit longer while the server wakes up. Also, the free tier Cloudinary instance may have limitations that can cause errors when uploading images. Thank you for your understanding.
 
 | Service     | URL                                           |
 | ----------- | --------------------------------------------- |
