@@ -45,7 +45,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/photos/58354937-2a6e-460e-802f-b594d6f51559",
+              "raw": "{{baseURL}}/api/v1/photos/2695dcf3-74e4-41a1-8d48-c537d03e64c9",
               "host": [
                 "{{baseURL}}"
               ],
@@ -53,7 +53,7 @@
                 "api",
                 "v1",
                 "photos",
-                "58354937-2a6e-460e-802f-b594d6f51559"
+                "2695dcf3-74e4-41a1-8d48-c537d03e64c9"
               ]
             }
           },
