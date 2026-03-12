@@ -2,14 +2,16 @@ import { Request, Response } from "express";
 import { CommentService } from "../services/comment.service";
 import { ApiResponse } from "../lib/apiResponse";
 import { catchAsync } from "../lib/catchAsync";
+import { parsePagination } from "../lib/pagination";
 import { BadRequestError } from "../lib/errors";
 
 const commentService = new CommentService();
 
 export class CommentController {
   getByPhotoId = catchAsync<{ photoId: string }>(async (req, res) => {
-    const comments = await commentService.findByPhotoId(req.params.photoId);
-    ApiResponse.ok(res, comments, "Comments retrieved successfully");
+    const pagination = parsePagination(req as any);
+    const result = await commentService.findByPhotoId(req.params.photoId, pagination);
+    ApiResponse.ok(res, result, "Comments retrieved successfully");
   });
 
   create = catchAsync(async (req: Request, res: Response) => {

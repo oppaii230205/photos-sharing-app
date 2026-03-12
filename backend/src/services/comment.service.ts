@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { NotFoundError } from "../lib/errors";
+import { PaginationQuery, PaginatedResult, paginate } from "../lib/pagination";
 
 interface CreateCommentInput {
   photoId: string;
@@ -10,13 +11,22 @@ interface CreateCommentInput {
 
 export class CommentService {
   /**
-   * Get all comments for a specific photo, ordered chronologically.
+   * Get paginated comments for a specific photo, ordered chronologically.
    */
-  async findByPhotoId(photoId: string) {
-    return prisma.comment.findMany({
-      where: { photoId },
-      orderBy: { createdAt: "asc" },
-    });
+  async findByPhotoId(photoId: string, query: PaginationQuery): Promise<PaginatedResult<any>> {
+    const where = { photoId };
+
+    const [comments, totalItems] = await Promise.all([
+      prisma.comment.findMany({
+        where,
+        orderBy: { createdAt: "asc" },
+        skip: query.skip,
+        take: query.limit,
+      }),
+      prisma.comment.count({ where }),
+    ]);
+
+    return paginate(comments, totalItems, query);
   }
 
   /**

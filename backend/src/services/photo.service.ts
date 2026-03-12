@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { uploadToCloudinary } from "./cloudinary.service";
 import { NotFoundError } from "../lib/errors";
+import { PaginationQuery, PaginatedResult, paginate } from "../lib/pagination";
 
 interface CreatePhotoInput {
   file: Express.Multer.File;
@@ -9,15 +10,20 @@ interface CreatePhotoInput {
 }
 
 export class PhotoService {
-  async findAll() {
-    return prisma.photo.findMany({
-      include: {
-        comments: {
-          orderBy: { createdAt: "asc" },
+  async findAll(query: PaginationQuery): Promise<PaginatedResult<any>> {
+    const [photos, totalItems] = await Promise.all([
+      prisma.photo.findMany({
+        include: {
+          _count: { select: { comments: true } },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+        skip: query.skip,
+        take: query.limit,
+      }),
+      prisma.photo.count(),
+    ]);
+
+    return paginate(photos, totalItems, query);
   }
 
   async findById(id: string) {
