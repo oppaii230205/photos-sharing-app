@@ -1,4 +1,5 @@
 import multer from "multer";
+import { BadRequestError } from "../lib/errors";
 
 // Use memory storage — files are held in buffer and forwarded to Cloudinary
 const storage = multer.memoryStorage();
@@ -12,7 +13,7 @@ const fileFilter = (
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only image files (JPEG, PNG, GIF, WebP) are allowed"));
+    cb(new BadRequestError("Only image files (JPEG, PNG, GIF, WebP) are allowed"));
   }
 };
 

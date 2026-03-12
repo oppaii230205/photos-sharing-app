@@ -50,12 +50,12 @@ export class ApiResponse {
 
   static error(
     res: Response,
-    httpCode: HttpStatusCode,
+    httpCode: number,
     message: string,
     data: unknown = null,
   ) {
     return res
       .status(httpCode)
-      .json(buildPayload(false, message, httpCode, data));
+      .json(buildPayload(false, message, httpCode as HttpStatusCode, data));
   }
 }

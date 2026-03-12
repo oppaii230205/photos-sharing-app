@@ -62,5 +62,3 @@ export class CommentService {
     }
   }
 }
-
-export { NotFoundError };
