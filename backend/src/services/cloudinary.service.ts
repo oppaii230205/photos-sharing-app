@@ -19,7 +19,7 @@ export async function uploadToCloudinary(
 
   const response = await fetch(env.CLOUDINARY_UPLOAD_URL, {
     method: "POST",
-    body: form as any,
+    body: form.getBuffer(),
     headers: form.getHeaders(),
   });
 
