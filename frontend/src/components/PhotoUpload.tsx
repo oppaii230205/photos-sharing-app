@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Upload, message, Button, Input } from "antd";
+import { Upload, App, Button, Input } from "antd";
 import { CloudUploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { photoApi } from "@/services/photoApi";
@@ -13,6 +13,7 @@ interface PhotoUploadProps {
 }
 
 export default function PhotoUpload({ onUploadSuccess }: PhotoUploadProps) {
+  const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [caption, setCaption] = useState("");
 
@@ -30,7 +31,9 @@ export default function PhotoUpload({ onUploadSuccess }: PhotoUploadProps) {
         onUploadSuccess();
       } catch (err: unknown) {
         const errorMsg =
-          err instanceof Error ? err.message : "Upload failed. Please try again.";
+          err instanceof Error
+            ? err.message
+            : "Upload failed. Please try again.";
         message.error(errorMsg);
         onError?.(new Error(errorMsg));
       } finally {

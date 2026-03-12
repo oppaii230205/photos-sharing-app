@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
-import { Spin, message, Popconfirm } from "antd";
+import { App, Spin, Popconfirm } from "antd";
 import { ArrowLeftOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import type { PhotoDetail } from "@/types";
@@ -16,6 +16,7 @@ export default function PhotoDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { message } = App.useApp();
   const router = useRouter();
   const [photo, setPhoto] = useState<PhotoDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -99,8 +100,7 @@ export default function PhotoDetailPage({
                 </h1>
               )}
               <p className="text-sm text-gray-400">
-                {photo.originalName} &middot;{" "}
-                {formatTimeAgo(photo.createdAt)}
+                {photo.originalName} &middot; {formatTimeAgo(photo.createdAt)}
               </p>
             </div>
 

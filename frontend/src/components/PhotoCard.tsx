@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { MessageOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Popconfirm, message } from "antd";
+import { App, Popconfirm } from "antd";
 import type { PhotoListItem } from "@/types";
 import { formatTimeAgo } from "@/lib/utils";
 import { photoApi } from "@/services/photoApi";
@@ -14,6 +14,7 @@ interface PhotoCardProps {
 }
 
 export default function PhotoCard({ photo, onDeleted }: PhotoCardProps) {
+  const { message } = App.useApp();
   const handleDelete = async () => {
     try {
       await photoApi.delete(photo.id);

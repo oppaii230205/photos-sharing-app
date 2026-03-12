@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Avatar, Spin, message } from "antd";
+import { Avatar, Spin, App } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import type { Comment, PaginationMeta } from "@/types";
 import { commentApi } from "@/services/commentApi";
@@ -17,6 +17,7 @@ export default function CommentSection({
   photoId,
   initialComments,
 }: CommentSectionProps) {
+  const { message } = App.useApp();
   const [comments, setComments] = useState<Comment[]>(initialComments ?? []);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(!initialComments);
@@ -29,7 +30,9 @@ export default function CommentSection({
     async (page: number, append = false) => {
       const result = await commentApi.getByPhotoId(photoId, page);
       if (!result) return;
-      setComments((prev) => (append ? [...prev, ...result.items] : result.items));
+      setComments((prev) =>
+        append ? [...prev, ...result.items] : result.items,
+      );
       setMeta(result.meta);
     },
     [photoId],
