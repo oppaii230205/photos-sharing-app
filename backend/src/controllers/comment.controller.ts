@@ -1,54 +1,35 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { CommentService } from "../services/comment.service";
 import { ApiResponse } from "../lib/apiResponse";
-import { BadRequestError, NotFoundError } from "../lib/errors";
+import { catchAsync } from "../lib/catchAsync";
+import { BadRequestError } from "../lib/errors";
 
 const commentService = new CommentService();
 
 export class CommentController {
-  async getByPhotoId(
-    req: Request<{ photoId: string }>,
-    res: Response,
-    next: NextFunction,
-  ) {
-    try {
-      const comments = await commentService.findByPhotoId(req.params.photoId);
-      ApiResponse.ok(res, comments, "Comments retrieved successfully");
-    } catch (error) {
-      next(error);
+  getByPhotoId = catchAsync<{ photoId: string }>(async (req, res) => {
+    const comments = await commentService.findByPhotoId(req.params.photoId);
+    ApiResponse.ok(res, comments, "Comments retrieved successfully");
+  });
+
+  create = catchAsync(async (req: Request, res: Response) => {
+    const { photoId, content, author } = req.body;
+
+    if (!photoId || !content || !String(content).trim()) {
+      throw new BadRequestError("photoId and content are required");
     }
-  }
 
-  async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { photoId, content, author } = req.body;
+    const comment = await commentService.create({
+      photoId,
+      content: String(content).trim(),
+      author: author ? String(author).trim() : undefined,
+    });
 
-      if (!photoId || !content || !String(content).trim()) {
-        throw new BadRequestError("photoId and content are required");
-      }
+    ApiResponse.created(res, comment, "Comment added successfully");
+  });
 
-      const comment = await commentService.create({
-        photoId,
-        content: String(content).trim(),
-        author: author ? String(author).trim() : undefined,
-      });
-
-      ApiResponse.created(res, comment, "Comment added successfully");
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async delete(
-    req: Request<{ id: string }>,
-    res: Response,
-    next: NextFunction,
-  ) {
-    try {
-      await commentService.delete(req.params.id);
-      ApiResponse.noContent(res);
-    } catch (error) {
-      next(error);
-    }
-  }
+  delete = catchAsync<{ id: string }>(async (req, res) => {
+    await commentService.delete(req.params.id);
+    ApiResponse.noContent(res);
+  });
 }
