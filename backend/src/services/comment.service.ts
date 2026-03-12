@@ -8,7 +8,10 @@ export class CommentService {
   /**
    * Get paginated comments for a specific photo, ordered chronologically.
    */
-  async findByPhotoId(photoId: string, query: PaginationQuery): Promise<PaginatedResult<any>> {
+  async findByPhotoId(
+    photoId: string,
+    query: PaginationQuery,
+  ): Promise<PaginatedResult<any>> {
     const where = { photoId };
 
     const [comments, totalItems] = await Promise.all([

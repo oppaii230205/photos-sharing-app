@@ -32,9 +32,7 @@ export async function uploadToCloudinary(
   const data = (await response.json()) as CloudinaryUploadResponse;
 
   if (data.code !== 1000) {
-    throw new InternalServerError(
-      `Cloudinary upload error: ${data.message}`,
-    );
+    throw new InternalServerError(`Cloudinary upload error: ${data.message}`);
   }
 
   return data.result.image;

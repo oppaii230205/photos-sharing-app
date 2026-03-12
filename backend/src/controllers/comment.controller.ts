@@ -10,7 +10,10 @@ const commentService = new CommentService();
 export class CommentController {
   getByPhotoId = catchAsync<{ photoId: string }>(async (req, res) => {
     const pagination = parsePagination(req as any);
-    const result = await commentService.findByPhotoId(req.params.photoId, pagination);
+    const result = await commentService.findByPhotoId(
+      req.params.photoId,
+      pagination,
+    );
     ApiResponse.ok(res, result, "Comments retrieved successfully");
   });
 

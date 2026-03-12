@@ -29,10 +29,16 @@ export interface PaginatedResult<T> {
  * Accepts `?page=2&limit=20`. Clamps values to safe ranges.
  */
 export function parsePagination(req: Request): PaginationQuery {
-  const page = Math.max(1, parseInt(req.query.page as string, 10) || PAGINATION_DEFAULTS.PAGE);
+  const page = Math.max(
+    1,
+    parseInt(req.query.page as string, 10) || PAGINATION_DEFAULTS.PAGE,
+  );
   const limit = Math.min(
     PAGINATION_DEFAULTS.MAX_LIMIT,
-    Math.max(1, parseInt(req.query.limit as string, 10) || PAGINATION_DEFAULTS.LIMIT),
+    Math.max(
+      1,
+      parseInt(req.query.limit as string, 10) || PAGINATION_DEFAULTS.LIMIT,
+    ),
   );
 
   return { page, limit, skip: (page - 1) * limit };
