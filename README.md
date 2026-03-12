@@ -10,10 +10,10 @@ Users can upload photos, browse the community gallery, and leave comments on any
 
 **Note**: The application is deployed on Render's free tier. Since free services may go to sleep after about 15 minutes of inactivity, the first API request might take a bit longer while the server wakes up. Thank you for your understanding.
 
-| Service     | URL                                        |
-| ----------- | ------------------------------------------ |
-| Frontend    | _[to be deployed — see local setup below]_ |
-| Backend API | _[to be deployed — see local setup below]_ |
+| Service     | URL                                           |
+| ----------- | --------------------------------------------- |
+| Frontend    | _https://photos-sharing-app-nine.vercel.app/_ |
+| Backend API | _https://photos-sharing-app.onrender.com_     |
 
 ---
 
