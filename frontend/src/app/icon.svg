@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Rounded indigo background matching the header logo -->
+  <rect width="32" height="32" rx="7" fill="#6366f1"/>
+  <!-- Camera icon (scaled from 20x20 to 24x24, centered with 4px padding) -->
+  <g transform="translate(4, 4) scale(1.2)">
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      fill="white"
+      d="M1 8a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 018.07 3h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0016.07 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm13.5 3a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM10 14a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"
+    />
+  </g>
+</svg>
