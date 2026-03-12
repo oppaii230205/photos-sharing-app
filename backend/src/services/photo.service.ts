@@ -3,11 +3,7 @@ import prisma from "../lib/prisma";
 import { uploadToCloudinary } from "./cloudinary.service";
 import { NotFoundError } from "../lib/errors";
 import { PaginationQuery, PaginatedResult, paginate } from "../lib/pagination";
-
-interface CreatePhotoInput {
-  file: Express.Multer.File;
-  caption?: string;
-}
+import { CreatePhotoInput } from "../types";
 
 export class PhotoService {
   async findAll(query: PaginationQuery): Promise<PaginatedResult<any>> {

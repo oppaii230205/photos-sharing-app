@@ -2,12 +2,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { NotFoundError } from "../lib/errors";
 import { PaginationQuery, PaginatedResult, paginate } from "../lib/pagination";
-
-interface CreateCommentInput {
-  photoId: string;
-  content: string;
-  author?: string;
-}
+import { CreateCommentInput } from "../types";
 
 export class CommentService {
   /**
