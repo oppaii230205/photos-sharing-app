@@ -1,22 +1,33 @@
-// Utility functions and constants
+/**
+ * Format a date string into a relative "time ago" label.
+ */
+export function formatTimeAgo(dateString: string): string {
+  const now = Date.now();
+  const then = new Date(dateString).getTime();
+  const seconds = Math.floor((now - then) / 1000);
 
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+  if (seconds < 60) return "just now";
 
-// Build the full URL to an uploaded image
-export function getImageUrl(photoUrl: string): string {
-  // photoUrl is like "/uploads/filename.jpg"
-  const baseUrl = API_URL.replace("/api", "");
-  return `${baseUrl}${photoUrl}`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+
+  const years = Math.floor(months / 12);
+  return `${years}y ago`;
 }
 
-// Format a date string for display
-export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+/**
+ * Generate a DiceBear avatar URL from a name string.
+ */
+export function getAvatarUrl(name: string): string {
+  const seed = encodeURIComponent(name.trim() || "anonymous");
+  return `https://api.dicebear.com/9.x/initials/svg?seed=${seed}`;
 }

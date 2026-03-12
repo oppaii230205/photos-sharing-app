@@ -1,38 +1,42 @@
 import apiClient from "./apiClient";
-import { Photo } from "@/types";
-
-// Photo API service
-// Centralizes all photo-related API calls
+import type {
+  ApiResponse,
+  PaginatedData,
+  PhotoListItem,
+  PhotoDetail,
+} from "@/types";
 
 export const photoApi = {
-  // Get all photos with their comments
-  getAll: async (): Promise<Photo[]> => {
-    const response = await apiClient.get("/photos");
-    return response.data;
+  getAll: async (page = 1, limit = 12) => {
+    const { data } = await apiClient.get<
+      ApiResponse<PaginatedData<PhotoListItem>>
+    >("/photos", { params: { page, limit } });
+    return data.data;
   },
 
-  // Get a single photo by ID
-  getById: async (id: string): Promise<Photo> => {
-    const response = await apiClient.get(`/photos/${id}`);
-    return response.data;
+  getById: async (id: string) => {
+    const { data } = await apiClient.get<ApiResponse<PhotoDetail>>(
+      `/photos/${id}`,
+    );
+    return data.data;
   },
 
-  // Upload a new photo
-  upload: async (file: File, caption?: string): Promise<Photo> => {
+  upload: async (file: File, caption?: string) => {
     const formData = new FormData();
     formData.append("photo", file);
     if (caption) {
       formData.append("caption", caption);
     }
 
-    const response = await apiClient.post("/photos", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return response.data;
+    const { data } = await apiClient.post<ApiResponse<PhotoDetail>>(
+      "/photos",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return data.data;
   },
 
-  // Delete a photo
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: string) => {
     await apiClient.delete(`/photos/${id}`);
   },
 };

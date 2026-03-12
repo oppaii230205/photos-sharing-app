@@ -1,7 +1,8 @@
+import "@ant-design/v5-patch-for-react-19";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { ConfigProvider } from "antd";
+import { App, ConfigProvider } from "antd";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
@@ -44,11 +45,13 @@ export default function RootLayout({
           }}
         >
           <AntdRegistry>
-            <Header />
-            <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {children}
-            </main>
-            <Footer />
+            <App>
+              <Header />
+              <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {children}
+              </main>
+              <Footer />
+            </App>
           </AntdRegistry>
         </ConfigProvider>
       </body>
