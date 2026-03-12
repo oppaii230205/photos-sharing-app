@@ -352,11 +352,11 @@ QodeProject/
 ### Step 1 — Clone the repository
 
 ```bash
-git clone <your-repo-url>
-cd QodeProject
+git clone https://github.com/oppaii230205/photos-sharing-app
+cd photos-sharing-app
 ```
 
-### Step 2 — Start PostgreSQL
+### Step 2 (Optional if using hosted PostgreSQL) — Start PostgreSQL
 
 ```bash
 docker-compose up -d
@@ -380,11 +380,17 @@ Create a `.env` file (copy from the example or create it manually):
 ```bash
 # backend/.env
 PORT=4000
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/photos_app"
+
+DATABASE_URL="postgresql://
+postgres:postgres@localhost:5432/photos_app"
+# Or use my hosted Postgres if you don't want to set up Docker:
+#DATABASE_URL=postgresql://postgres.uidmvdvdvmsfrrdmxcpf:hXOH4sLjID3yLJgU@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
+
+
 NODE_ENV=development
 
-# Optional: override the Cloudinary proxy URL
-# CLOUDINARY_UPLOAD_URL=https://file-service-cdal.onrender.com/api/v1/file/uploads
+# The Cloudinary proxy URL is already set to a public instance, but you can replace it with your own if desired.
+CLOUDINARY_UPLOAD_URL=https://file-service-cdal.onrender.com/api/v1/file/uploads
 ```
 
 Install dependencies, run migrations, and start the dev server:
