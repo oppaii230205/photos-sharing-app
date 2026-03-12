@@ -13,7 +13,11 @@ const fileFilter = (
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new BadRequestError("Only image files (JPEG, PNG, GIF, WebP) are allowed"));
+    cb(
+      new BadRequestError(
+        "Only image files (JPEG, PNG, GIF, WebP) are allowed",
+      ),
+    );
   }
 };
 
