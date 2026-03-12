@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { CommentService } from "../services/comment.service";
-import { NotFoundError } from "../lib/errors";
+import { ApiResponse } from "../lib/apiResponse";
+import { BadRequestError, NotFoundError } from "../lib/errors";
 
 const commentService = new CommentService();
 
@@ -12,7 +13,7 @@ export class CommentController {
   ) {
     try {
       const comments = await commentService.findByPhotoId(req.params.photoId);
-      res.json(comments);
+      ApiResponse.ok(res, comments, "Comments retrieved successfully");
     } catch (error) {
       next(error);
     }
@@ -23,8 +24,7 @@ export class CommentController {
       const { photoId, content, author } = req.body;
 
       if (!photoId || !content || !String(content).trim()) {
-        res.status(400).json({ error: "photoId and content are required" });
-        return;
+        throw new BadRequestError("photoId and content are required");
       }
 
       const comment = await commentService.create({
@@ -33,12 +33,8 @@ export class CommentController {
         author: author ? String(author).trim() : undefined,
       });
 
-      res.status(201).json(comment);
+      ApiResponse.created(res, comment, "Comment added successfully");
     } catch (error) {
-      if (error instanceof NotFoundError) {
-        res.status(404).json({ error: error.message });
-        return;
-      }
       next(error);
     }
   }
@@ -50,12 +46,8 @@ export class CommentController {
   ) {
     try {
       await commentService.delete(req.params.id);
-      res.status(204).send();
+      ApiResponse.noContent(res);
     } catch (error) {
-      if (error instanceof NotFoundError) {
-        res.status(404).json({ error: error.message });
-        return;
-      }
       next(error);
     }
   }

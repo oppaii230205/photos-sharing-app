@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { PhotoService } from "../services/photo.service";
+import { ApiResponse } from "../lib/apiResponse";
+import { BadRequestError, NotFoundError } from "../lib/errors";
 
 const photoService = new PhotoService();
 
@@ -7,7 +9,7 @@ export class PhotoController {
   async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const photos = await photoService.findAll();
-      res.json(photos);
+      ApiResponse.ok(res, photos, "Photos retrieved successfully");
     } catch (error) {
       next(error);
     }
@@ -21,10 +23,9 @@ export class PhotoController {
     try {
       const photo = await photoService.findById(req.params.id);
       if (!photo) {
-        res.status(404).json({ error: "Photo not found" });
-        return;
+        throw new NotFoundError("Photo not found");
       }
-      res.json(photo);
+      ApiResponse.ok(res, photo, "Photo retrieved successfully");
     } catch (error) {
       next(error);
     }
@@ -34,8 +35,7 @@ export class PhotoController {
     try {
       const file = req.file;
       if (!file) {
-        res.status(400).json({ error: "No file uploaded" });
-        return;
+        throw new BadRequestError("No file uploaded");
       }
 
       const photo = await photoService.create({
@@ -43,7 +43,7 @@ export class PhotoController {
         caption: req.body.caption,
       });
 
-      res.status(201).json(photo);
+      ApiResponse.created(res, photo, "Photo uploaded successfully");
     } catch (error) {
       next(error);
     }
@@ -56,7 +56,7 @@ export class PhotoController {
   ) {
     try {
       await photoService.delete(req.params.id);
-      res.status(204).send();
+      ApiResponse.noContent(res);
     } catch (error) {
       next(error);
     }
