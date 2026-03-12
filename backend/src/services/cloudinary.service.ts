@@ -1,6 +1,7 @@
 import FormData from "form-data";
 import { env } from "../config";
 import { CloudinaryUploadResponse } from "../types";
+import { InternalServerError } from "../lib/errors";
 
 /**
  * Uploads an image file buffer to the Cloudinary proxy service.
@@ -23,13 +24,17 @@ export async function uploadToCloudinary(
   });
 
   if (!response.ok) {
-    throw new Error(`Cloudinary upload failed with status ${response.status}`);
+    throw new InternalServerError(
+      `Cloudinary upload failed with status ${response.status}`,
+    );
   }
 
   const data = (await response.json()) as CloudinaryUploadResponse;
 
   if (data.code !== 1000) {
-    throw new Error(`Cloudinary upload error: ${data.message}`);
+    throw new InternalServerError(
+      `Cloudinary upload error: ${data.message}`,
+    );
   }
 
   return data.result.image;
