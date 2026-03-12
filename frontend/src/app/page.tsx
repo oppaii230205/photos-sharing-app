@@ -7,24 +7,19 @@ import PhotoGallery from "@/components/PhotoGallery";
 export default function HomePage() {
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleUploadSuccess = () => {
-    setRefreshKey((prev) => prev + 1);
-  };
-
   return (
-    <div className="space-y-12 animate-in fade-in duration-500">
+    <div className="space-y-10">
       <section>
-        <PhotoUpload onUploadSuccess={handleUploadSuccess} />
+        <PhotoUpload onUploadSuccess={() => setRefreshKey((k) => k + 1)} />
       </section>
 
       <section>
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Recent Uploads</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Discover what&apos;s happening in your community
+        <div className="mb-5">
+          <h2 className="text-[17px] font-semibold text-gray-900">Photos</h2>
+          <p className="text-[13px] text-gray-400 mt-0.5">
+            Shared by the community
           </p>
         </div>
-
         <PhotoGallery key={refreshKey} />
       </section>
     </div>

@@ -12,7 +12,7 @@
   }
 }
 
-/* Reset some AntD styles to map well with Tailwind */
+/* Remove antd Upload drag area chrome so we can style it ourselves */
 .ant-upload-wrapper .ant-upload-drag {
   border: none !important;
   background: transparent !important;
@@ -20,4 +20,27 @@
 
 .ant-upload-wrapper .ant-upload-drag .ant-upload {
   padding: 0 !important;
+}
+
+/* Thin scrollbar for comment panels */
+.thin-scroll,
+.lg\:overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+
+.thin-scroll::-webkit-scrollbar,
+.lg\:overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.thin-scroll::-webkit-scrollbar-track,
+.lg\:overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scroll::-webkit-scrollbar-thumb,
+.lg\:overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 9999px;
 }

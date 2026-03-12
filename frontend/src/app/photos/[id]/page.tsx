@@ -3,7 +3,6 @@
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { App, Spin, Popconfirm } from "antd";
-import { ArrowLeftOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import type { PhotoDetail } from "@/types";
 import { photoApi } from "@/services/photoApi";
@@ -47,82 +46,110 @@ export default function PhotoDetailPage({
   if (loading) {
     return (
       <div className="flex justify-center items-center py-32">
-        <Spin size="large" />
+        <Spin />
       </div>
     );
   }
 
   if (error || !photo) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900">Photo not found</h2>
-        <p className="text-gray-500">
-          This photo may have been deleted or doesn&apos;t exist.
+      <div className="flex flex-col items-center justify-center py-32 gap-3">
+        <p className="text-[15px] font-medium text-gray-700">Photo not found</p>
+        <p className="text-[13px] text-gray-400">
+          This photo may have been deleted.
         </p>
         <Link
           href="/"
-          className="text-primary hover:text-indigo-700 font-medium"
+          className="text-[13px] text-indigo-600 hover:text-indigo-700 font-medium mt-1"
         >
-          Back to gallery
+          ← Back to gallery
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
-      {/* Back link */}
+    <div className="space-y-4">
+      {/* Back nav */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium"
+        className="inline-flex items-center gap-1.5 text-[13px] text-gray-500 hover:text-gray-900 transition-colors font-medium"
       >
-        <ArrowLeftOutlined />
-        Back to gallery
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          className="w-3.5 h-3.5"
+        >
+          <path
+            fillRule="evenodd"
+            d="M9.78 4.22a.75.75 0 010 1.06L7.06 8l2.72 2.72a.75.75 0 11-1.06 1.06L5.47 8.53a.75.75 0 010-1.06l3.25-3.25a.75.75 0 011.06 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+        Back
       </Link>
 
-      {/* Photo */}
-      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgb(0,0,0,0.04)] border border-gray-100">
-        <div className="relative w-full bg-gray-100">
+      {/* Split layout: image left, comments right */}
+      <div className="flex flex-col lg:flex-row bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm lg:max-h-[calc(100vh-120px)]">
+        {/* ── Left: photo ───────────────────────────────────────────────── */}
+        <div className="lg:flex-1 bg-gray-950 flex items-center justify-center min-h-[260px]">
           <img
             src={photo.url}
             alt={photo.caption || photo.originalName}
-            className="w-full max-h-[70vh] object-contain"
+            className="max-h-[60vh] lg:max-h-[calc(100vh-120px)] w-full lg:w-auto object-contain"
           />
         </div>
 
-        <div className="p-6 sm:p-8">
-          {/* Caption & meta */}
-          <div className="flex items-start justify-between gap-4 mb-2">
-            <div>
-              {photo.caption && (
-                <h1 className="text-lg font-semibold text-gray-900 mb-1">
-                  {photo.caption}
-                </h1>
-              )}
-              <p className="text-sm text-gray-400">
-                {photo.originalName} &middot; {formatTimeAgo(photo.createdAt)}
-              </p>
+        {/* ── Right: meta + comments ────────────────────────────────────── */}
+        <div className="lg:w-[360px] flex-shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l border-gray-100 lg:overflow-hidden">
+          {/* Photo meta header */}
+          <div className="px-5 py-4 border-b border-gray-100 flex-shrink-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                {photo.caption && (
+                  <p className="text-[14px] font-semibold text-gray-900 leading-snug">
+                    {photo.caption}
+                  </p>
+                )}
+                <p className="text-[12px] text-gray-400 mt-0.5">
+                  {photo.originalName}&nbsp;&middot;&nbsp;
+                  {formatTimeAgo(photo.createdAt)}
+                </p>
+              </div>
+              <Popconfirm
+                title="Delete this photo?"
+                onConfirm={handleDelete}
+                okText="Delete"
+                okType="danger"
+                placement="bottomRight"
+              >
+                <button className="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0 mt-0.5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5 3.25V4H2.75a.75.75 0 000 1.5h.3l.815 8.15A1.5 1.5 0 005.357 15h5.285a1.5 1.5 0 001.493-1.35l.815-8.15h.3a.75.75 0 000-1.5H11v-.75A2.25 2.25 0 008.75 1h-1.5A2.25 2.25 0 005 3.25zm2.25-.75a.75.75 0 00-.75.75V4h3v-.75a.75.75 0 00-.75-.75h-1.5zM6.05 6a.75.75 0 01.787.713l.275 5.5a.75.75 0 01-1.498.075l-.275-5.5A.75.75 0 016.05 6zm3.9 0a.75.75 0 01.712.787l-.275 5.5a.75.75 0 01-1.498-.075l.275-5.5a.75.75 0 01.786-.711z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </Popconfirm>
             </div>
+          </div>
 
-            <Popconfirm
-              title="Delete this photo?"
-              description="This action cannot be undone."
-              onConfirm={handleDelete}
-              okText="Delete"
-              okType="danger"
-            >
-              <button className="text-gray-300 hover:text-red-500 transition-colors text-lg flex-shrink-0">
-                <DeleteOutlined />
-              </button>
-            </Popconfirm>
+          {/* Comment section — fills remaining height, handles its own scroll */}
+          <div className="flex-1 lg:overflow-y-auto lg:min-h-0">
+            <CommentSection
+              photoId={photo.id}
+              initialComments={photo.comments}
+            />
           </div>
         </div>
-      </div>
-
-      {/* Comments */}
-      <div className="bg-white rounded-2xl shadow-[0_2px_12px_rgb(0,0,0,0.04)] border border-gray-100 p-6 sm:p-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Comments</h2>
-        <CommentSection photoId={photo.id} initialComments={photo.comments} />
       </div>
     </div>
   );

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import PhotoCard from "./PhotoCard";
-import { Button, Spin } from "antd";
 import type { PhotoListItem, PaginationMeta } from "@/types";
 import { photoApi } from "@/services/photoApi";
 
@@ -19,7 +18,7 @@ export default function PhotoGallery() {
       setPhotos((prev) => (append ? [...prev, ...result.items] : result.items));
       setMeta(result.meta);
     } catch {
-      // silently fail — empty state shown
+      // silently — empty state shown below
     }
   }, []);
 
@@ -36,15 +35,25 @@ export default function PhotoGallery() {
   };
 
   const handlePhotoDeleted = () => {
-    // Re-fetch from page 1 to get correct state
     setLoading(true);
     fetchPhotos(1).finally(() => setLoading(false));
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <Spin size="large" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+          >
+            <div className="aspect-[4/3] bg-gray-100 animate-pulse" />
+            <div className="px-4 py-3 space-y-2">
+              <div className="h-3 bg-gray-100 animate-pulse rounded w-3/4" />
+              <div className="h-2.5 bg-gray-100 animate-pulse rounded w-1/3" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -52,31 +61,31 @@ export default function PhotoGallery() {
   return (
     <div className="flex flex-col items-center w-full">
       {photos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-gray-100 w-full shadow-sm mt-2">
-          <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
+        <div className="flex flex-col items-center justify-center py-20 w-full">
+          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
             <svg
-              className="w-12 h-12 text-primary/40"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-7 h-7 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              strokeWidth={1.5}
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900">No photos yet</h3>
-          <p className="text-gray-500 mt-2 text-center max-w-sm">
-            Be the first to share a moment with the community. Upload your first
-            photo above!
+          <p className="text-[15px] font-medium text-gray-700">No photos yet</p>
+          <p className="text-[13px] text-gray-400 mt-1">
+            Upload your first photo above to get started.
           </p>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
             {photos.map((photo) => (
               <PhotoCard
                 key={photo.id}
@@ -87,15 +96,13 @@ export default function PhotoGallery() {
           </div>
 
           {meta && meta.page < meta.totalPages && (
-            <Button
-              shape="round"
-              size="large"
-              loading={loadingMore}
+            <button
               onClick={handleLoadMore}
-              className="mt-10 px-10 h-11 font-medium text-gray-700 hover:text-gray-900 border-gray-200 shadow-sm"
+              disabled={loadingMore}
+              className="mt-10 text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-50"
             >
-              Load More
-            </Button>
+              {loadingMore ? "Loading…" : "Load more photos"}
+            </button>
           )}
         </>
       )}

@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Avatar, Spin, App } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { App, Spin } from "antd";
 import type { Comment, PaginationMeta } from "@/types";
 import { commentApi } from "@/services/commentApi";
 import { formatTimeAgo, getAvatarUrl } from "@/lib/utils";
 
 interface CommentSectionProps {
   photoId: string;
-  /** Pre-loaded comments from the photo detail response (avoids an extra fetch). */
   initialComments?: Comment[];
 }
 
@@ -61,9 +59,7 @@ export default function CommentSection({
         trimmed,
         author.trim() || undefined,
       );
-      if (newComment) {
-        setComments((prev) => [...prev, newComment]);
-      }
+      if (newComment) setComments((prev) => [...prev, newComment]);
       setContent("");
     } catch {
       message.error("Failed to post comment");
@@ -83,94 +79,100 @@ export default function CommentSection({
 
   if (loading) {
     return (
-      <div className="flex justify-center py-8">
+      <div className="flex justify-center py-10">
         <Spin />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      {/* Comments list */}
-      <div className="space-y-4">
+    <div className="flex flex-col h-full">
+      {/* Comment list */}
+      <div className="flex-1 px-5 py-4 space-y-5 overflow-y-auto min-h-0">
         {comments.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-4">
-            No comments yet — be the first!
+          <p className="text-[13px] text-gray-400 py-4">
+            No comments yet. Be the first!
           </p>
         )}
+
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-3 items-start group">
-            <Avatar
+            <img
               src={getAvatarUrl(comment.author)}
-              size={28}
-              className="flex-shrink-0 mt-0.5 border border-gray-100"
+              alt={comment.author}
+              className="w-7 h-7 rounded-full border border-gray-100 flex-shrink-0 mt-0.5 bg-gray-50"
             />
-            <div className="flex flex-col flex-1 min-w-0">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="font-semibold text-[13px] text-gray-800">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2 mb-0.5">
+                <span className="text-[13px] font-semibold text-gray-800 leading-none">
                   {comment.author}
                 </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-gray-400 whitespace-nowrap">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <span className="text-[11px] text-gray-400">
                     {formatTimeAgo(comment.createdAt)}
                   </span>
                   <button
                     onClick={() => handleDelete(comment.id)}
-                    className="text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 text-[12px]"
+                    className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-all"
+                    aria-label="Delete comment"
                   >
-                    <DeleteOutlined />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 12 12"
+                      fill="currentColor"
+                      className="w-3 h-3"
+                    >
+                      <path d="M5 1a1 1 0 00-1 1H2.5a.5.5 0 000 1H3v5.5A1.5 1.5 0 004.5 10h3A1.5 1.5 0 009 8.5V3h.5a.5.5 0 000-1H8a1 1 0 00-1-1H5zm0 1h2v.5a.5.5 0 00.5.5h.5v5.5a.5.5 0 01-.5.5h-3a.5.5 0 01-.5-.5V3h.5a.5.5 0 00.5-.5V2z" />
+                    </svg>
                   </button>
                 </div>
               </div>
-              <p className="text-[13px] text-gray-600 leading-snug mt-0.5 break-words">
+              <p className="text-[13px] text-gray-600 leading-snug break-words">
                 {comment.content}
               </p>
             </div>
           </div>
         ))}
+
+        {meta && meta.page < meta.totalPages && (
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="text-[12px] text-gray-400 hover:text-indigo-600 transition-colors font-medium"
+          >
+            {loadingMore ? "Loading…" : "Load more comments"}
+          </button>
+        )}
       </div>
 
-      {/* Load more comments */}
-      {meta && meta.page < meta.totalPages && (
-        <button
-          onClick={handleLoadMore}
-          disabled={loadingMore}
-          className="text-[13px] text-primary hover:text-indigo-700 font-medium self-center"
-        >
-          {loadingMore ? "Loading..." : "Load more comments"}
-        </button>
-      )}
-
-      {/* Comment input */}
-      <div className="space-y-2 pt-2 border-t border-gray-50">
-        <div className="relative w-full flex items-center bg-[#F8FAFF] border border-indigo-50/50 rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30 transition-all overflow-hidden">
+      {/* Sticky composer */}
+      <div className="sticky bottom-0 bg-white border-t border-gray-100 px-5 py-4 space-y-2 flex-shrink-0">
+        <input
+          type="text"
+          placeholder="Your name (optional)"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          maxLength={50}
+          className="w-full text-[13px] bg-gray-50 border border-transparent rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-gray-200 focus:ring-2 focus:ring-indigo-50 transition-all placeholder-gray-400 text-gray-700"
+        />
+        <div className="flex gap-2">
           <input
             type="text"
-            placeholder="Your name (optional)"
-            className="w-28 bg-transparent border-none outline-none text-[13px] text-gray-700 placeholder-gray-400 h-8 border-r border-gray-200 pr-3 mr-3"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            maxLength={50}
-          />
-          <input
-            type="text"
-            placeholder="Write a comment..."
-            className="flex-1 bg-transparent border-none outline-none text-[13px] text-gray-700 placeholder-gray-400 h-8"
+            placeholder="Add a comment…"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !posting && handlePost()}
+            onKeyDown={(e) =>
+              e.key === "Enter" && !e.shiftKey && !posting && handlePost()
+            }
             maxLength={1000}
+            className="flex-1 text-[13px] bg-gray-50 border border-transparent rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-gray-200 focus:ring-2 focus:ring-indigo-50 transition-all placeholder-gray-400 text-gray-700"
           />
           <button
             onClick={handlePost}
             disabled={!content.trim() || posting}
-            className={`text-[13px] font-semibold transition-colors px-2 ${
-              content.trim() && !posting
-                ? "text-primary hover:text-indigo-700"
-                : "text-primary/40 cursor-not-allowed"
-            }`}
+            className="px-4 py-2 text-[13px] font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
           >
-            {posting ? "..." : "Post"}
+            {posting ? "…" : "Post"}
           </button>
         </div>
       </div>
