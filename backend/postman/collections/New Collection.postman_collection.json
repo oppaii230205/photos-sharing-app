@@ -4,5 +4,179 @@
     "name": "PhotoBoard",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "item": []
+  "item": [
+    {
+      "name": "Photos",
+      "item": [
+        {
+          "name": "Get All Photos (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/photos?page=1&limit=12",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "photos"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Photo By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/photos/:id",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "photos", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "paste-photo-id-here",
+                  "description": "UUID of the photo"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Photo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": "",
+                  "description": "Image file (JPEG, PNG, GIF, WebP). Max 5 MB."
+                },
+                {
+                  "key": "caption",
+                  "value": "Sunset at Da Nang beach",
+                  "type": "text",
+                  "description": "Optional caption for the photo"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/photos",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "photos"]
+            }
+          }
+        },
+        {
+          "name": "Delete Photo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/photos/:id",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "photos", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "paste-photo-id-here",
+                  "description": "UUID of the photo to delete"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Get Comments By Photo ID (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/comments/photo/:photoId?page=1&limit=12",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "comments", "photo", ":photoId"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "12" }
+              ],
+              "variable": [
+                {
+                  "key": "photoId",
+                  "value": "paste-photo-id-here",
+                  "description": "UUID of the photo to get comments for"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"photoId\": \"paste-photo-id-here\",\n  \"content\": \"This is such a beautiful photo! Love the lighting.\",\n  \"author\": \"John Doe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/comments",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "comments"]
+            }
+          }
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/comments/:id",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "comments", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "paste-comment-id-here",
+                  "description": "UUID of the comment to delete"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseURL}}/api/v1/health",
+          "host": ["{{baseURL}}"],
+          "path": ["api", "v1", "health"]
+        }
+      }
+    }
+  ]
 }
