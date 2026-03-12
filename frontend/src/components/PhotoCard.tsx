@@ -1,65 +1,83 @@
 "use client";
 
-import React, { useState } from "react";
-import { Avatar } from "antd";
-import { HeartFilled, HeartOutlined } from "@ant-design/icons";
-import CommentSection from "./CommentSection";
+import React from "react";
+import Link from "next/link";
+import { MessageOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Popconfirm, message } from "antd";
+import type { PhotoListItem } from "@/types";
+import { formatTimeAgo } from "@/lib/utils";
+import { photoApi } from "@/services/photoApi";
 
 interface PhotoCardProps {
-  photo: any;
+  photo: PhotoListItem;
+  onDeleted?: () => void;
 }
 
-export default function PhotoCard({ photo }: PhotoCardProps) {
-  const [liked, setLiked] = useState(false);
+export default function PhotoCard({ photo, onDeleted }: PhotoCardProps) {
+  const handleDelete = async () => {
+    try {
+      await photoApi.delete(photo.id);
+      message.success("Photo deleted");
+      onDeleted?.();
+    } catch {
+      message.error("Failed to delete photo");
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgb(0,0,0,0.03)] border border-gray-100 flex flex-col transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.06)] hover:-translate-y-1">
-      {/* Image Container */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
-        <img
-          src={photo.url}
-          alt="Upload"
-          className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-          loading="lazy"
-        />
-      </div>
+      {/* Image — links to detail page */}
+      <Link href={`/photos/${photo.id}`} className="block">
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+          <img
+            src={photo.url}
+            alt={photo.caption || photo.originalName}
+            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+      </Link>
 
       <div className="p-5 flex flex-col flex-1">
-        {/* User Info & Actions */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-3">
-            <Avatar
-              src={photo.user.avatar}
-              size={36}
-              className="border border-gray-100"
-            />
-            <div className="flex flex-col">
-              <span className="font-semibold text-[14px] text-gray-900 leading-tight">
-                {photo.user.name}
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-medium text-gray-400 mt-0.5 tracking-wider uppercase">
-                {photo.user.time}
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={() => setLiked(!liked)}
-            className={`text-xl transition-colors focus:outline-none ${liked ? "text-rose-500 hover:text-rose-600" : "text-slate-300 hover:text-rose-400"}`}
-          >
-            {liked ? (
-              <HeartFilled />
-            ) : (
-              <HeartOutlined className="stroke-[1.5]" />
-            )}
-          </button>
+        {/* Caption & time */}
+        <div className="mb-4">
+          {photo.caption && (
+            <p className="text-[14px] text-gray-800 font-medium leading-snug line-clamp-2">
+              {photo.caption}
+            </p>
+          )}
+          <span className="text-[11px] font-medium text-gray-400 mt-1.5 tracking-wider uppercase block">
+            {formatTimeAgo(photo.createdAt)}
+          </span>
         </div>
 
-        {/* Divider - thin and subtle */}
-        <div className="h-[1px] w-full bg-gray-50 mb-5"></div>
+        {/* Divider */}
+        <div className="h-[1px] w-full bg-gray-50 mb-4"></div>
 
-        {/* Comments Section */}
-        <div className="flex-1 flex flex-col min-h-0">
-          <CommentSection initialComments={photo.comments} />
+        {/* Footer: comment count + delete */}
+        <div className="flex items-center justify-between mt-auto">
+          <Link
+            href={`/photos/${photo.id}`}
+            className="flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors text-[13px]"
+          >
+            <MessageOutlined />
+            <span>
+              {photo._count.comments}{" "}
+              {photo._count.comments === 1 ? "comment" : "comments"}
+            </span>
+          </Link>
+
+          <Popconfirm
+            title="Delete this photo?"
+            description="This action cannot be undone."
+            onConfirm={handleDelete}
+            okText="Delete"
+            okType="danger"
+          >
+            <button className="text-gray-300 hover:text-red-500 transition-colors text-[15px]">
+              <DeleteOutlined />
+            </button>
+          </Popconfirm>
         </div>
       </div>
     </div>

@@ -1,115 +1,45 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PhotoCard from "./PhotoCard";
-import { Button } from "antd";
-import { Spin } from "antd";
-
-const MOCK_PHOTOS = [
-  {
-    id: "1",
-    url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
-    user: {
-      name: "Sarah Jenkins",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-      time: "2 HOURS AGO",
-    },
-    likes: 12,
-    comments: [
-      {
-        id: "101",
-        user: {
-          name: "Marcus",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus",
-        },
-        text: "Love the lighting in this shot! Did you use a filter?",
-        time: "1h ago",
-      },
-      {
-        id: "102",
-        user: {
-          name: "Elena",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena",
-        },
-        text: "Absolutely breathtaking scenery.",
-        time: "45m ago",
-      },
-    ],
-  },
-  {
-    id: "2",
-    url: "https://images.unsplash.com/photo-1542273917363-3b1817f69a5d?w=800&q=80",
-    user: {
-      name: "Alex Rivera",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
-      time: "4 HOURS AGO",
-    },
-    likes: 34,
-    comments: [
-      {
-        id: "201",
-        user: {
-          name: "Jordan",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
-        },
-        text: "Nature is the best therapist. Beautiful catch.",
-        time: "2h ago",
-      },
-      {
-        id: "202",
-        user: {
-          name: "Sam",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
-        },
-        text: "The depth of green here is incredible.",
-        time: "1h ago",
-      },
-    ],
-  },
-  {
-    id: "3",
-    url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
-    user: {
-      name: "David Chen",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
-      time: "6 HOURS AGO",
-    },
-    likes: 8,
-    comments: [
-      {
-        id: "301",
-        user: {
-          name: "Chloe",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chloe",
-        },
-        text: "The fog adds so much mood to this!",
-        time: "3h ago",
-      },
-      {
-        id: "302",
-        user: {
-          name: "Tom",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tom",
-        },
-        text: "Perfect composition.",
-        time: "2h ago",
-      },
-    ],
-  },
-];
+import { Button, Spin } from "antd";
+import type { PhotoListItem, PaginationMeta } from "@/types";
+import { photoApi } from "@/services/photoApi";
 
 export default function PhotoGallery() {
   const [loading, setLoading] = useState(true);
-  const [photos, setPhotos] = useState<any[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [photos, setPhotos] = useState<PhotoListItem[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
+
+  const fetchPhotos = useCallback(async (page: number, append = false) => {
+    try {
+      const result = await photoApi.getAll(page);
+      if (!result) return;
+      setPhotos((prev) => (append ? [...prev, ...result.items] : result.items));
+      setMeta(result.meta);
+    } catch {
+      // silently fail — empty state shown
+    }
+  }, []);
 
   useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setPhotos(MOCK_PHOTOS);
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+    setLoading(true);
+    fetchPhotos(1).finally(() => setLoading(false));
+  }, [fetchPhotos]);
+
+  const handleLoadMore = async () => {
+    if (!meta || meta.page >= meta.totalPages) return;
+    setLoadingMore(true);
+    await fetchPhotos(meta.page + 1, true);
+    setLoadingMore(false);
+  };
+
+  const handlePhotoDeleted = () => {
+    // Re-fetch from page 1 to get correct state
+    setLoading(true);
+    fetchPhotos(1).finally(() => setLoading(false));
+  };
 
   if (loading) {
     return (
@@ -123,7 +53,6 @@ export default function PhotoGallery() {
     <div className="flex flex-col items-center w-full">
       {photos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-gray-100 w-full shadow-sm mt-2">
-          {/* Using a simple placeholder for empty state */}
           <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
             <svg
               className="w-12 h-12 text-primary/40"
@@ -149,17 +78,25 @@ export default function PhotoGallery() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
             {photos.map((photo) => (
-              <PhotoCard key={photo.id} photo={photo} />
+              <PhotoCard
+                key={photo.id}
+                photo={photo}
+                onDeleted={handlePhotoDeleted}
+              />
             ))}
           </div>
 
-          <Button
-            shape="round"
-            size="large"
-            className="mt-10 px-10 h-11 font-medium text-gray-700 hover:text-gray-900 border-gray-200 shadow-sm"
-          >
-            Load More
-          </Button>
+          {meta && meta.page < meta.totalPages && (
+            <Button
+              shape="round"
+              size="large"
+              loading={loadingMore}
+              onClick={handleLoadMore}
+              className="mt-10 px-10 h-11 font-medium text-gray-700 hover:text-gray-900 border-gray-200 shadow-sm"
+            >
+              Load More
+            </Button>
+          )}
         </>
       )}
     </div>

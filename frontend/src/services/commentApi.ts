@@ -1,26 +1,28 @@
 import apiClient from "./apiClient";
-import { Comment } from "@/types";
-
-// Comment API service
-// Centralizes all comment-related API calls
+import type {
+  ApiResponse,
+  PaginatedData,
+  Comment,
+} from "@/types";
 
 export const commentApi = {
-  // Add a comment to a photo
-  create: async (
-    photoId: string,
-    content: string,
-    author?: string,
-  ): Promise<Comment> => {
-    const response = await apiClient.post("/comments", {
+  getByPhotoId: async (photoId: string, page = 1, limit = 20) => {
+    const { data } = await apiClient.get<
+      ApiResponse<PaginatedData<Comment>>
+    >(`/comments/photo/${photoId}`, { params: { page, limit } });
+    return data.data;
+  },
+
+  create: async (photoId: string, content: string, author?: string) => {
+    const { data } = await apiClient.post<ApiResponse<Comment>>("/comments", {
       photoId,
       content,
       author,
     });
-    return response.data;
+    return data.data;
   },
 
-  // Delete a comment
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: string) => {
     await apiClient.delete(`/comments/${id}`);
   },
 };

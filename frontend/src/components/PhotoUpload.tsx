@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Upload, message, Button } from "antd";
+import { Upload, message, Button, Input } from "antd";
 import { CloudUploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
+import { photoApi } from "@/services/photoApi";
 
 const { Dragger } = Upload;
 
@@ -13,41 +14,59 @@ interface PhotoUploadProps {
 
 export default function PhotoUpload({ onUploadSuccess }: PhotoUploadProps) {
   const [loading, setLoading] = useState(false);
+  const [caption, setCaption] = useState("");
 
   const props: UploadProps = {
     name: "photo",
     multiple: false,
     showUploadList: false,
-    customRequest: async ({ file, onSuccess }) => {
+    customRequest: async ({ file, onSuccess, onError }) => {
       setLoading(true);
-      // Simulate API call for the mockup
-      setTimeout(() => {
-        setLoading(false);
-        message.success(`${(file as File).name} file uploaded successfully.`);
+      try {
+        await photoApi.upload(file as File, caption || undefined);
+        message.success(`${(file as File).name} uploaded successfully.`);
+        setCaption("");
         onSuccess?.("ok");
         onUploadSuccess();
-      }, 1500);
+      } catch (err: unknown) {
+        const errorMsg =
+          err instanceof Error ? err.message : "Upload failed. Please try again.";
+        message.error(errorMsg);
+        onError?.(new Error(errorMsg));
+      } finally {
+        setLoading(false);
+      }
     },
     beforeUpload: (file) => {
-      const isJpgOrPng =
+      const isAllowed =
         file.type === "image/jpeg" ||
         file.type === "image/png" ||
         file.type === "image/gif" ||
         file.type === "image/webp";
-      if (!isJpgOrPng) {
-        message.error("You can only upload JPG/PNG/GIF files!");
+      if (!isAllowed) {
+        message.error("You can only upload JPG/PNG/GIF/WebP files!");
+        return false;
       }
       const isLt5M = file.size / 1024 / 1024 < 5;
       if (!isLt5M) {
-        message.error("Image must smaller than 5MB!");
+        message.error("Image must be smaller than 5MB!");
+        return false;
       }
-      return isJpgOrPng && isLt5M;
+      return true;
     },
   };
 
   return (
     <div className="bg-white rounded-2xl p-8 sm:p-12 shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-gray-100 flex justify-center">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl space-y-5">
+        <Input
+          placeholder="Add a caption for your photo (optional)"
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          size="large"
+          className="rounded-xl"
+          maxLength={500}
+        />
         <Dragger
           {...props}
           className="border-2 border-dashed rounded-2xl bg-[#F8FAFF] hover:bg-[#F2F6FF] transition-all duration-300 group overflow-hidden"
